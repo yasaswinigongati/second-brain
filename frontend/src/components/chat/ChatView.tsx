@@ -5,149 +5,144 @@ import { ChatMessage, Note } from "@/types";
 import { useAppStore } from "@/store/appStore";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Brain, Send, Loader2, FileText, User, Sparkles, Trash2 } from "lucide-react";
-import { cn, formatDate } from "@/lib/utils";
+import { Send, Loader2, FileText, RotateCcw } from "lucide-react";
+
+const STARTERS = [
+  "Summarize what I know about AI",
+  "What's in my Research notebook?",
+  "What were my latest ideas?",
+];
 
 export default function ChatView() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
+  const [msgs, setMsgs]       = useState<ChatMessage[]>([]);
+  const [input, setInput]     = useState("");
   const [loading, setLoading] = useState(false);
-  const [sources, setSources] = useState<Record<number, Note[]>>({});
-  const [followUps, setFollowUps] = useState<string[]>([]);
+  const [srcMap, setSrcMap]   = useState<Record<number, Note[]>>({});
+  const [followUps, setFU]    = useState<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef  = useRef<HTMLTextAreaElement>(null);
   const { setSelectedNote, setEditorOpen } = useAppStore();
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, loading]);
 
   const send = async (text: string) => {
     const userMsg: ChatMessage = { role: "user", content: text };
-    const nextMessages = [...messages, userMsg];
-    setMessages(nextMessages);
-    setInput("");
-    setFollowUps([]);
-    setLoading(true);
+    const next = [...msgs, userMsg];
+    setMsgs(next); setInput(""); setFU([]); setLoading(true);
     try {
-      const res = await chatApi.send(text, messages);
-      const assistantMsg: ChatMessage = { role: "assistant", content: res.message };
-      setMessages([...nextMessages, assistantMsg]);
-      setSources(prev => ({ ...prev, [nextMessages.length]: res.sources }));
-      setFollowUps(res.follow_up_questions ?? []);
+      const res = await chatApi.send(text, msgs);
+      setMsgs([...next, { role: "assistant", content: res.message }]);
+      setSrcMap(p => ({ ...p, [next.length]: res.sources }));
+      setFU(res.follow_up_questions ?? []);
     } catch {
-      setMessages([...nextMessages, { role: "assistant", content: "⚠️ Could not reach the backend. Make sure the FastAPI server is running on port 8000." }]);
+      setMsgs([...next, { role: "assistant", content: "⚠️ Backend unreachable. Start the FastAPI server on port 8000." }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (input.trim()) send(input.trim()); }
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#f8f7f4]">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brain-500 to-brain-700 flex items-center justify-center">
-            <Brain size={15} className="text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-800">AI Assistant</p>
-            <p className="text-[10px] text-gray-400">Grounded in your notes via RAG</p>
-          </div>
+    <div className="flex flex-col h-full" style={{ background: "var(--c-bg)" }}>
+      {/* Bar */}
+      <div className="flex items-center justify-between px-5 py-2.5 border-b" style={{ borderColor: "var(--c-border)", background: "var(--c-surface)" }}>
+        <div>
+          <span className="text-sm font-medium text-stone-700">AI Chat</span>
+          <span className="ml-2 text-[11px] font-mono text-stone-400">grounded in your notes</span>
         </div>
-        {messages.length > 0 && (
-          <button onClick={() => { setMessages([]); setSources({}); setFollowUps([]); }}
-            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors">
-            <Trash2 size={12} /> Clear
+        {msgs.length > 0 && (
+          <button
+            onClick={() => { setMsgs([]); setSrcMap({}); setFU([]); }}
+            className="flex items-center gap-1 text-[11px] font-mono text-stone-400 hover:text-stone-700 px-2 py-1 rounded hover:bg-stone-100 transition-colors"
+          >
+            <RotateCcw size={11} /> clear
           </button>
         )}
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-auto px-4 py-6 space-y-6">
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brain-100 to-brain-200 flex items-center justify-center">
-              <Sparkles size={28} className="text-brain-600" />
-            </div>
+      <div className="flex-1 overflow-auto px-4 py-5 space-y-5">
+        {msgs.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full gap-5 pb-16 text-center">
             <div>
-              <h3 style={{ fontFamily: "Instrument Serif, serif" }} className="text-xl text-gray-700 mb-1">Ask your Second Brain</h3>
-              <p className="text-sm text-gray-400 max-w-sm">I'll answer questions using your actual notes as context, powered by RAG.</p>
+              <p className="font-serif text-2xl text-stone-400 mb-1">Ask your notes anything.</p>
+              <p className="text-xs font-mono text-stone-400">Answers come from your actual notes, not the internet.</p>
             </div>
-            <div className="grid grid-cols-1 gap-2 max-w-sm w-full mt-2">
-              {["Summarize my recent notes", "What are my key ideas about AI?", "What did I capture last week?"].map(q => (
-                <button key={q} onClick={() => send(q)}
-                  className="text-sm text-left px-4 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-brain-300 hover:bg-brain-50 text-gray-600 transition-colors">
-                  {q}
+            <div className="flex flex-col gap-2 w-full max-w-sm">
+              {STARTERS.map(s => (
+                <button key={s} onClick={() => send(s)}
+                  className="text-sm text-left px-4 py-2.5 rounded-lg transition-all hover:shadow-sm font-mono text-stone-500"
+                  style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)" }}>
+                  {s}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {messages.map((msg, i) => (
-          <div key={i} className={cn("flex gap-3 animate-in", msg.role === "user" ? "justify-end" : "justify-start")}>
-            {msg.role === "assistant" && (
-              <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-brain-500 to-brain-700 flex items-center justify-center flex-shrink-0 mt-1">
-                <Brain size={13} className="text-white" />
+        {msgs.map((m, i) => (
+          <div key={i} className={`flex gap-3 fade-up ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            {m.role === "assistant" && (
+              <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 mt-1 font-mono text-[10px] font-bold text-white"
+                style={{ background: "var(--c-accent)" }}>
+                AI
               </div>
             )}
-            <div className={cn("max-w-2xl", msg.role === "user" ? "order-first" : "")}>
-              <div className={cn(
-                "rounded-2xl px-4 py-3 text-sm",
-                msg.role === "user"
-                  ? "bg-brain-600 text-white rounded-br-sm"
-                  : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-sm"
-              )}>
-                {msg.role === "assistant" ? (
-                  <div className="prose-note">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                  </div>
-                ) : msg.content}
+            <div className="max-w-xl">
+              <div
+                className="px-4 py-3 rounded-lg text-sm leading-relaxed"
+                style={m.role === "user"
+                  ? { background: "var(--c-sidebar)", color: "#D6D3D1" }
+                  : { background: "var(--c-surface)", border: "1px solid var(--c-border)", color: "var(--c-text)" }
+                }
+              >
+                {m.role === "assistant"
+                  ? <div className="prose-note text-sm"><ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown></div>
+                  : m.content
+                }
               </div>
 
               {/* Source notes */}
-              {msg.role === "assistant" && sources[i - 1]?.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {sources[i - 1].map(note => (
-                    <button key={note.id} onClick={() => { setSelectedNote(note); setEditorOpen(true); }}
-                      className="flex items-center gap-1 text-[11px] px-2 py-1 bg-brain-50 text-brain-700 rounded-lg hover:bg-brain-100 transition-colors">
-                      <FileText size={10} /> {note.title}
+              {m.role === "assistant" && (srcMap[i - 1]?.length ?? 0) > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {srcMap[i - 1].map(n => (
+                    <button key={n.id} onClick={() => { setSelectedNote(n); setEditorOpen(true); }}
+                      className="flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded transition-colors text-amber-700 hover:bg-amber-50"
+                      style={{ border: "1px solid #FDE68A" }}>
+                      <FileText size={9} /> {n.title}
                     </button>
                   ))}
                 </div>
               )}
             </div>
-            {msg.role === "user" && (
-              <div className="w-7 h-7 rounded-xl bg-gray-200 flex items-center justify-center flex-shrink-0 mt-1">
-                <User size={13} className="text-gray-600" />
-              </div>
-            )}
           </div>
         ))}
 
         {loading && (
-          <div className="flex gap-3 animate-in">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-brain-500 to-brain-700 flex items-center justify-center flex-shrink-0">
-              <Brain size={13} className="text-white" />
+          <div className="flex gap-3 fade-up">
+            <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 font-mono text-[10px] font-bold text-white"
+              style={{ background: "var(--c-accent)" }}>
+              AI
             </div>
-            <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-              <span className="dot-1 inline-block w-1.5 h-1.5 bg-brain-400 rounded-full mx-0.5" />
-              <span className="dot-2 inline-block w-1.5 h-1.5 bg-brain-400 rounded-full mx-0.5" />
-              <span className="dot-3 inline-block w-1.5 h-1.5 bg-brain-400 rounded-full mx-0.5" />
+            <div className="px-4 py-3 rounded-lg" style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)" }}>
+              <span className="dot-1 inline-block w-1.5 h-1.5 rounded-full mx-0.5" style={{ background: "var(--c-accent)" }} />
+              <span className="dot-2 inline-block w-1.5 h-1.5 rounded-full mx-0.5" style={{ background: "var(--c-accent)" }} />
+              <span className="dot-3 inline-block w-1.5 h-1.5 rounded-full mx-0.5" style={{ background: "var(--c-accent)" }} />
             </div>
           </div>
         )}
 
-        {/* Follow-up suggestions */}
+        {/* Follow-ups */}
         {followUps.length > 0 && !loading && (
-          <div className="flex flex-wrap gap-2 pl-10">
-            {followUps.map(q => (
-              <button key={q} onClick={() => send(q)}
-                className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-brain-300 hover:bg-brain-50 text-gray-600 transition-colors">
-                {q}
+          <div className="flex flex-wrap gap-2 pl-9">
+            {followUps.map(fq => (
+              <button key={fq} onClick={() => send(fq)}
+                className="text-[11px] font-mono px-2.5 py-1 rounded-full transition-colors text-stone-500 hover:text-stone-800"
+                style={{ border: "1px solid var(--c-border2)" }}>
+                {fq}
               </button>
             ))}
           </div>
@@ -157,27 +152,29 @@ export default function ChatView() {
       </div>
 
       {/* Input */}
-      <div className="px-4 pb-4">
-        <div className="flex items-end gap-2 bg-white border border-gray-200 rounded-2xl p-3 focus-within:border-brain-300 focus-within:ring-2 focus-within:ring-brain-50 transition-all shadow-sm">
+      <div className="px-4 pb-4" style={{ borderTop: "1px solid var(--c-border)", paddingTop: 12 }}>
+        <div className="flex items-end gap-2 px-3 py-2.5 rounded-lg transition-all"
+          style={{ background: "var(--c-surface)", border: "1px solid var(--c-border2)" }}>
           <textarea
             ref={inputRef}
             value={input}
             onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask anything about your notes… (Enter to send)"
+            onKeyDown={handleKey}
+            placeholder="Ask something… (Enter to send)"
             rows={1}
-            className="flex-1 resize-none outline-none text-sm text-gray-800 placeholder-gray-300 bg-transparent leading-relaxed max-h-32"
-            style={{ scrollbarWidth: "none" }}
+            className="flex-1 resize-none outline-none text-sm bg-transparent font-mono leading-relaxed max-h-28"
+            style={{ color: "var(--c-text)" }}
           />
           <button
             onClick={() => { if (input.trim()) send(input.trim()); }}
             disabled={!input.trim() || loading}
-            className="p-2 bg-brain-600 hover:bg-brain-700 text-white rounded-xl transition-colors disabled:opacity-40 flex-shrink-0"
+            className="p-1.5 rounded text-white disabled:opacity-40 transition-colors flex-shrink-0"
+            style={{ background: "var(--c-accent)" }}
           >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+            {loading ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
           </button>
         </div>
-        <p className="text-[10px] text-gray-300 text-center mt-2">Answers grounded in your notes · Shift+Enter for new line</p>
+        <p className="text-[10px] font-mono text-stone-300 mt-1.5 text-center">Shift+Enter for new line</p>
       </div>
     </div>
   );

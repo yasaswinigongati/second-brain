@@ -8,15 +8,21 @@ import DashboardView from "@/components/notes/DashboardView";
 import NoteEditor from "@/components/notes/NoteEditor";
 import { useAppStore } from "@/store/appStore";
 
+// Must match --sidebar-w in globals.css
+const SIDEBAR_W = 252;
+
 export default function AppShell() {
   const { activeView, sidebarOpen } = useAppStore();
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f8f7f4]">
+    <div className="flex h-screen overflow-hidden" style={{ background: "var(--c-bg)" }}>
       <Sidebar />
       <div
-        className="flex flex-col flex-1 overflow-hidden transition-all duration-300"
-        style={{ marginLeft: sidebarOpen ? "260px" : "0" }}
+        className="flex flex-col flex-1 overflow-hidden"
+        style={{
+          marginLeft: sidebarOpen ? SIDEBAR_W : 0,
+          transition: "margin-left 0.18s ease",
+        }}
       >
         <Header />
         <main className="flex-1 overflow-hidden">

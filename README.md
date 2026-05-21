@@ -1,86 +1,118 @@
-# 🧠 Second Brain — AI-Powered Note Taking App
+# brain.
 
-A full-stack AI-powered second brain app with semantic search, RAG-based Q&A, and smart note organization.
+A note-taking app I built because I was tired of paying for Notion and not trusting that Obsidian's AI plugins weren't phoning home with my notes.
 
-## Tech Stack
+RAG-powered so you can actually talk to your notes. Built over a few weekends.
 
-### Frontend
-- **Next.js 14** (App Router) + **TypeScript**
-- **Tailwind CSS** for styling
-- **Zustand** for state management
-- **React Query** for data fetching
+## what it does
 
-### Backend
-- **FastAPI** (Python) REST API
-- **LangChain** for RAG pipeline
-- **ChromaDB** for vector storage
-- **OpenAI / Anthropic** embeddings & LLM
+- write notes in markdown, organized into notebooks
+- semantic search (find notes by meaning, not exact words)
+- AI chat that answers questions *from your own notes*, not the internet
+- auto-tagging via LLM when you're too lazy to tag manually
+- grid or list view, dark sidebar, works fine
 
-## Features
+## stack
 
-- 📝 Rich note creation & editing (Markdown support)
-- 🔍 Semantic search across all notes
-- 🤖 AI Chat — ask questions, get answers grounded in YOUR notes
-- 🏷️ Auto-tagging & categorization
-- 🔗 Note linking & knowledge graph
-- 📁 Notebook organization
-- 💡 AI-powered note suggestions
+**frontend** — Next.js 14, TypeScript, Tailwind, Zustand, React Query  
+**backend** — FastAPI (Python), LangChain, ChromaDB for vectors  
+**LLM** — OpenAI gpt-4o-mini by default (cheap, fast enough)  
+**embeddings** — text-embedding-3-small  
 
-## Project Structure
+## running it
 
-```
-second-brain/
-├── frontend/          # Next.js TypeScript app
-│   └── src/
-│       ├── app/       # App Router pages
-│       ├── components/
-│       │   ├── ui/    # Base UI components
-│       │   ├── notes/ # Note-specific components
-│       │   ├── chat/  # AI chat components
-│       │   └── layout/
-│       ├── lib/       # API client, utilities
-│       ├── hooks/     # Custom React hooks
-│       ├── store/     # Zustand stores
-│       └── types/     # TypeScript types
-│
-└── backend/           # FastAPI Python app
-    ├── app/           # Main app
-    ├── routers/       # API route handlers
-    ├── services/      # Business logic (RAG, embeddings)
-    ├── models/        # Pydantic models
-    └── utils/         # Helpers
-```
+You need an OpenAI API key. Everything else is local.
 
-## Quick Start
-
-### Backend
 ```bash
+# 1. clone
+git clone https://github.com/YOUR_USERNAME/second-brain.git
+cd second-brain
+
+# 2. backend
 cd backend
+cp .env.example .env
+# edit .env and add your OPENAI_API_KEY
 pip install -r requirements.txt
-cp .env.example .env   # Add your API keys
 uvicorn app.main:app --reload --port 8000
-```
 
-### Frontend
-```bash
+# 3. frontend (new terminal)
 cd frontend
+cp .env.example .env.local
 npm install
-cp .env.example .env.local   # Add backend URL
 npm run dev
 ```
 
 Open http://localhost:3000
 
-## Environment Variables
-
-### Backend (.env)
+Or with Docker:
+```bash
+cp backend/.env.example backend/.env
+# add OPENAI_API_KEY to backend/.env
+docker-compose up --build
 ```
-OPENAI_API_KEY=your_key_here
-ANTHROPIC_API_KEY=your_key_here
+
+## seed some sample notes
+
+```bash
+cd backend
+python utils/seed.py
+```
+
+This creates 4 sample notes so you can test search and chat right away.
+
+## project layout
+
+```
+second-brain/
+├── backend/
+│   ├── app/           # FastAPI app + config
+│   ├── models/        # Pydantic schemas
+│   ├── routers/       # notes, chat endpoints
+│   ├── services/
+│   │   ├── rag_service.py    # LangChain RAG pipeline
+│   │   └── note_store.py     # JSON file persistence
+│   ├── utils/         # seed, reindex scripts
+│   └── tests/         # pytest tests
+│
+└── frontend/
+    └── src/
+        ├── app/           # Next.js app router
+        ├── components/
+        │   ├── layout/    # shell, sidebar, header
+        │   ├── notes/     # note list, editor, search, dashboard
+        │   └── chat/      # AI chat
+        ├── hooks/         # useNotes etc.
+        ├── lib/           # api client, utils
+        ├── store/         # zustand
+        └── types/         # TypeScript types
+```
+
+## env vars
+
+**backend/.env**
+```
+OPENAI_API_KEY=sk-...
 CHROMA_DB_PATH=./data/chroma_db
+EMBEDDING_MODEL=text-embedding-3-small
+LLM_MODEL=gpt-4o-mini
+CORS_ORIGINS=http://localhost:3000
 ```
 
-### Frontend (.env.local)
+**frontend/.env.local**
 ```
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
+
+## switching to Anthropic
+
+Change `LLM_MODEL` in `.env` and swap `ChatOpenAI` for `ChatAnthropic` in `backend/services/rag_service.py`. LangChain makes this a two-line change.
+
+## known issues / todo
+
+- notes are stored as JSON files — fine for personal use, swap for SQLite/Postgres if you want multi-user
+- no auth — this is meant to run locally
+- the reindex script (`python utils/seed.py`) needs to be run manually if ChromaDB gets out of sync
+
+## license
+
+MIT

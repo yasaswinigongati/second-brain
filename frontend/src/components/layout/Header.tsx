@@ -1,13 +1,13 @@
 "use client";
 import { useAppStore } from "@/store/appStore";
-import { Menu, Grid2x2, List, Plus } from "lucide-react";
+import { Grid2x2, List, Plus, SidebarOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const viewLabels: Record<string, string> = {
-  dashboard: "Dashboard",
-  notes: "Notes",
-  chat: "AI Chat",
-  search: "Search",
+const LABELS: Record<string, string> = {
+  dashboard: "Overview",
+  notes:     "Notes",
+  chat:      "Ask AI",
+  search:    "Search",
 };
 
 export default function Header() {
@@ -18,66 +18,64 @@ export default function Header() {
     activeNotebook, activeTag,
   } = useAppStore();
 
-  const subtitle = activeNotebook
-    ? `Notebook: ${activeNotebook}`
-    : activeTag
-    ? `Tag: #${activeTag}`
-    : null;
+  const crumb = activeNotebook ?? (activeTag ? `#${activeTag}` : null);
 
   return (
     <header
-      className="h-14 bg-white border-b border-gray-100 flex items-center px-5 gap-4 flex-shrink-0 z-10"
+      className="h-11 flex items-center px-5 gap-3 flex-shrink-0"
+      style={{
+        borderBottom: "1px solid var(--c-border)",
+        background: "var(--c-surface)",
+      }}
     >
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
-          className="text-gray-500 hover:text-gray-800 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+          className="text-stone-400 hover:text-stone-700 p-1 -ml-1 rounded transition-colors"
         >
-          <Menu size={18} />
+          <SidebarOpen size={16} />
         </button>
       )}
 
-      <div className="flex-1">
-        <h1
-          className="font-medium text-gray-900 leading-none"
-          style={{ fontFamily: "Instrument Serif, serif", fontSize: "1.15rem" }}
-        >
-          {viewLabels[activeView] ?? "Notes"}
-        </h1>
-        {subtitle && (
-          <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+        <span className="text-sm font-medium text-stone-800">{LABELS[activeView]}</span>
+        {crumb && (
+          <>
+            <span className="text-stone-300">/</span>
+            <span className="text-sm text-stone-500 truncate">{crumb}</span>
+          </>
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         {activeView === "notes" && (
           <>
-            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+            <div className="flex items-center border border-stone-200 rounded overflow-hidden">
               <button
                 onClick={() => setViewMode("grid")}
                 className={cn(
-                  "p-1.5 rounded-md transition-colors",
-                  viewMode === "grid" ? "bg-white shadow-sm text-gray-800" : "text-gray-400 hover:text-gray-600"
+                  "p-1.5 transition-colors",
+                  viewMode === "grid" ? "bg-stone-100 text-stone-700" : "text-stone-400 hover:text-stone-600"
                 )}
               >
-                <Grid2x2 size={15} />
+                <Grid2x2 size={13} />
               </button>
               <button
                 onClick={() => setViewMode("list")}
                 className={cn(
-                  "p-1.5 rounded-md transition-colors",
-                  viewMode === "list" ? "bg-white shadow-sm text-gray-800" : "text-gray-400 hover:text-gray-600"
+                  "p-1.5 transition-colors",
+                  viewMode === "list" ? "bg-stone-100 text-stone-700" : "text-stone-400 hover:text-stone-600"
                 )}
               >
-                <List size={15} />
+                <List size={13} />
               </button>
             </div>
             <button
               onClick={() => { setSelectedNote(null); setEditorOpen(true); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-brain-600 hover:bg-brain-700 text-white rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded transition-colors text-white"
+              style={{ background: "var(--c-accent)" }}
             >
-              <Plus size={15} />
-              New
+              <Plus size={13} /> Note
             </button>
           </>
         )}

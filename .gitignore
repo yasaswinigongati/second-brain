@@ -2,19 +2,24 @@
 __pycache__/
 *.pyc
 *.pyo
-.env
-*.egg-info/
 .venv/
 venv/
+*.egg-info/
+
+# Env files (keep .env.example)
+.env
+frontend/.env.local
 
 # Node
 node_modules/
 .next/
 dist/
-.env.local
 
-# Data (don't commit notes or vector DB)
-backend/data/
+# Data files (keep directory structure via .gitkeep)
+backend/data/notes/*.json
+backend/data/chroma_db/*
+!backend/data/notes/.gitkeep
+!backend/data/chroma_db/.gitkeep
 
 # OS
 .DS_Store

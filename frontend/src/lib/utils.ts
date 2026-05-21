@@ -8,21 +8,16 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const oneDayMs = 24 * 60 * 60 * 1000;
-
-  if (diff < oneDayMs) {
-    return formatDistanceToNow(date, { addSuffix: true });
-  } else if (diff < 7 * oneDayMs) {
-    return formatDistanceToNow(date, { addSuffix: true });
-  }
-  return format(date, "MMM d, yyyy");
+  const diff = Date.now() - date.getTime();
+  if (diff < 60_000) return "just now";
+  if (diff < 3_600_000) return formatDistanceToNow(date, { addSuffix: true });
+  if (diff < 86_400_000) return format(date, "h:mm a");
+  if (diff < 7 * 86_400_000) return format(date, "EEE");
+  return format(date, "MMM d");
 }
 
-export function truncate(str: string, length: number): string {
-  if (str.length <= length) return str;
-  return str.slice(0, length).trim() + "…";
+export function truncate(str: string, len: number) {
+  return str.length <= len ? str : str.slice(0, len).trimEnd() + "…";
 }
 
 export function stripMarkdown(text: string): string {
@@ -32,21 +27,20 @@ export function stripMarkdown(text: string): string {
     .replace(/\*([^*]+)\*/g, "$1")
     .replace(/`([^`]+)`/g, "$1")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    .replace(/^\s*[-*+]\s+/gm, "")
-    .replace(/^\s*\d+\.\s+/gm, "")
+    .replace(/^\s*[-*+>]\s+/gm, "")
     .replace(/\n+/g, " ")
     .trim();
 }
 
-export const NOTEBOOK_COLORS: Record<string, string> = {
-  Default: "bg-gray-100 text-gray-700",
-  Work: "bg-blue-100 text-blue-700",
-  Personal: "bg-purple-100 text-purple-700",
-  Research: "bg-amber-100 text-amber-700",
-  Ideas: "bg-green-100 text-green-700",
-  Learning: "bg-rose-100 text-rose-700",
+// Notebook → colour dot CSS class
+export const NB_DOT: Record<string, string> = {
+  Default:  "nb-dot-default",
+  Work:     "nb-dot-work",
+  Personal: "nb-dot-personal",
+  Research: "nb-dot-research",
+  Ideas:    "nb-dot-ideas",
+  Learning: "nb-dot-learning",
 };
-
-export function getNotebookColor(notebook: string): string {
-  return NOTEBOOK_COLORS[notebook] || "bg-brain-100 text-brain-700";
+export function nbDot(nb: string) {
+  return NB_DOT[nb] ?? "nb-dot-default";
 }
