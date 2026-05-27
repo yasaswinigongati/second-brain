@@ -1,7 +1,7 @@
 🧠 Second-brain
 
 # What it is:
-A local-first AI-powered note-taking app that lets users write, organize, and chat with their own notes using RAG (Retrieval-Augmented Generation).
+A local-first AI-powered personal note-taking app that lets users write, organize, and chat with their own notes using RAG (Retrieval-Augmented Generation).
 
 # Frontend:
 Built with Next.js 14, TypeScript, Tailwind CSS, Zustand, and React Query for a fast, responsive UI.
