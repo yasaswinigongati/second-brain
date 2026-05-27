@@ -110,8 +110,7 @@ export default function ChatView() {
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {srcMap[i - 1].map(n => (
                     <button key={n.id} onClick={() => { setSelectedNote(n); setEditorOpen(true); }}
-                      className="flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded transition-colors text-amber-700 hover:bg-amber-50"
-                      style={{ border: "1px solid #FDE68A" }}>
+                      className="tag-link flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded transition-colors">
                       <FileText size={9} /> {n.title}
                     </button>
                   ))}

@@ -15,11 +15,12 @@
   --c-text:      #1C1917;
   --c-muted:     #78716C;
   --c-faint:     #A8A29E;
-  --c-accent:    #D97706;       /* warm amber — one strong accent only */
-  --c-accent2:   #92400E;
+  --c-accent:    #2E8B57;       /* sea green — primary accent */
+  --c-accent2:   #1F6B4A;
   --c-green:     #15803D;
-  --c-tag-bg:    #FEF3C7;
-  --c-tag-text:  #92400E;
+  --c-tag-bg:    #E0F4EC;
+  --c-tag-text:  #1F6B4A;
+  --c-tag-border:#B8E0CE;
   --c-code-bg:   #292524;
   --sidebar-w:   252px;
 }
@@ -173,7 +174,7 @@ body {
 .nb-dot-default  { background: #78716C; }
 .nb-dot-work     { background: #0EA5E9; }
 .nb-dot-personal { background: #A855F7; }
-.nb-dot-research { background: #F59E0B; }
+.nb-dot-research { background: #2E8B57; }
 .nb-dot-ideas    { background: #22C55E; }
 .nb-dot-learning { background: #EF4444; }
 
@@ -187,3 +188,20 @@ kbd {
   padding: 1px 4px;
   color: var(--c-muted);
 }
+
+/* ── Accent utilities (sea green) ─────────────────────────────────── */
+.tag-pill {
+  color: var(--c-tag-text);
+  background: var(--c-tag-bg);
+}
+.tag-pill-btn:hover { color: #14532D; }
+.tag-link {
+  color: var(--c-tag-text);
+  border: 1px solid var(--c-tag-border);
+}
+.tag-link:hover { background: var(--c-tag-bg); }
+.accent-soft-btn {
+  color: var(--c-tag-text);
+}
+.accent-soft-btn:hover { background: var(--c-tag-bg); }
+.accent-soft-btn:disabled { opacity: 0.4; }

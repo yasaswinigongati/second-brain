@@ -9,7 +9,7 @@ const config: Config = {
         surface: "#FDFBF8",
         sidebar: "#1C1917",
         border:  "#E4DED6",
-        accent:  "#D97706",
+        accent:  "#2E8B57",
         muted:   "#78716C",
         faint:   "#A8A29E",
       },

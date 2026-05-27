@@ -104,7 +104,8 @@ export default function NoteEditor() {
                 {NOTEBOOKS.map(nb => (
                   <button key={nb} onClick={() => { setNotebook(nb); setNbOpen(false); }}
                     className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 transition-colors",
-                      notebook === nb ? "text-amber-700 font-medium" : "text-stone-600")}>
+                      notebook === nb ? "font-medium" : "text-stone-600")}
+                    style={notebook === nb ? { color: "var(--c-accent)" } : undefined}>
                     {nb}
                   </button>
                 ))}
@@ -119,7 +120,7 @@ export default function NoteEditor() {
             onClick={() => autoTagMut.mutate()}
             disabled={!title || !content || autoTagMut.isPending}
             title="Auto-tag with AI"
-            className="flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors text-amber-700 hover:bg-amber-50 disabled:opacity-40"
+            className="accent-soft-btn flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors"
           >
             {autoTagMut.isPending ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
             AI tag
@@ -184,9 +185,9 @@ export default function NoteEditor() {
         <div className="px-5 py-2.5 border-t flex flex-wrap items-center gap-1.5" style={{ borderColor: "var(--c-border)" }}>
           <Hash size={12} className="text-stone-400 flex-shrink-0" />
           {tags.map(t => (
-            <span key={t} className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+            <span key={t} className="tag-pill inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-full">
               {t}
-              <button onClick={() => setTags(p => p.filter(x => x !== t))} className="hover:text-amber-900">
+              <button onClick={() => setTags(p => p.filter(x => x !== t))} className="tag-pill-btn">
                 <X size={9} />
               </button>
             </span>

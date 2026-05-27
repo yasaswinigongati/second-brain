@@ -145,7 +145,7 @@ export default function Sidebar() {
                 className={cn(
                   "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-mono transition-colors",
                   activeTag === tag
-                    ? "text-amber-300 bg-stone-700"
+                    ? "text-emerald-300 bg-stone-700"
                     : "text-stone-600 hover:text-stone-300 hover:bg-stone-800"
                 )}
               >

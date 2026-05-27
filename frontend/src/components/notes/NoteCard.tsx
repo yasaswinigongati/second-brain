@@ -48,7 +48,7 @@ export default function NoteCard({ note, view = "grid" }: { note: Note; view?: "
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
           {note.tags.slice(0, 2).map(t => (
-            <span key={t} className="text-[11px] font-mono text-amber-700 hidden sm:block">#{t}</span>
+            <span key={t} className="text-[11px] font-mono hidden sm:block" style={{ color: "var(--c-tag-text)" }}>#{t}</span>
           ))}
           <span className="text-[11px] text-stone-400 font-mono">{formatDate(note.updated_at)}</span>
           <div ref={menuRef} className="relative">
@@ -96,7 +96,7 @@ export default function NoteCard({ note, view = "grid" }: { note: Note; view?: "
       {note.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 pl-2">
           {note.tags.slice(0, 4).map(t => (
-            <span key={t} className="inline-flex items-center gap-0.5 text-[10px] font-mono text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
+            <span key={t} className="tag-pill inline-flex items-center gap-0.5 text-[10px] font-mono px-1.5 py-0.5 rounded">
               <Hash size={8} />{t}
             </span>
           ))}

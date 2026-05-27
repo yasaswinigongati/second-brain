@@ -5,7 +5,7 @@ from services import note_store, rag_service
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 
-@router.post("/", response_model=ChatResponse)
+@router.post("", response_model=ChatResponse)
 async def chat(req: ChatRequest):
     answer, source_ids, follow_ups = await rag_service.chat_with_notes(
         message=req.message,

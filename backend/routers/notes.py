@@ -10,7 +10,7 @@ from services import note_store, rag_service
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 
-@router.post("/", response_model=Note, status_code=201)
+@router.post("", response_model=Note, status_code=201)
 async def create_note(data: NoteCreate):
     note = await note_store.create_note(data)
     # Index in vector store (non-blocking)
@@ -21,7 +21,7 @@ async def create_note(data: NoteCreate):
     return note
 
 
-@router.get("/", response_model=List[Note])
+@router.get("", response_model=List[Note])
 async def list_notes(
     notebook: Optional[str] = Query(None),
     tag: Optional[str] = Query(None),

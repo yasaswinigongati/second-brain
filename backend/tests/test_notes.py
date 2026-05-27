@@ -3,23 +3,28 @@ Basic API tests for notes endpoints.
 Run: pytest tests/ -v
 """
 import pytest
-import asyncio
+import pytest_asyncio
 import os
-os.environ["CHROMA_DB_PATH"] = "/tmp/test_chroma"
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "sk-test")
+import tempfile
+
+os.environ["NOTES_DIR"] = tempfile.mkdtemp(prefix="second_brain_notes_")
+os.environ["CHROMA_DB_PATH"] = tempfile.mkdtemp(prefix="second_brain_chroma_")
 
 from httpx import AsyncClient, ASGITransport
 from app.main import app
+from services import rag_service
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
+@pytest_asyncio.fixture(autouse=True)
+async def disable_vector_indexing(monkeypatch):
+    async def noop(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(rag_service, "index_note", noop)
+    monkeypatch.setattr(rag_service, "remove_note_from_index", noop)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def client():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         yield c

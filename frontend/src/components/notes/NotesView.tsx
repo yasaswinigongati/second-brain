@@ -3,18 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { notesApi } from "@/lib/api";
 import { useAppStore } from "@/store/appStore";
 import NoteCard from "./NoteCard";
-import { useEffect } from "react";
 import { Pencil } from "lucide-react";
 
 export default function NotesView() {
-  const { viewMode, activeNotebook, activeTag, setNotes, setEditorOpen, setSelectedNote } = useAppStore();
+  const { viewMode, activeNotebook, activeTag, setEditorOpen, setSelectedNote } = useAppStore();
 
   const { data: notes = [], isLoading } = useQuery({
     queryKey: ["notes", activeNotebook, activeTag],
     queryFn: () => notesApi.list({ notebook: activeNotebook ?? undefined, tag: activeTag ?? undefined }),
   });
-
-  useEffect(() => { setNotes(notes); }, [notes, setNotes]);
 
   if (isLoading) {
     return (

@@ -1,16 +1,17 @@
 """
-Note storage service — persists notes as JSON files.
+Note storage service - persists notes as JSON files.
 In production, swap for PostgreSQL or SQLite.
 """
 import json
 import os
 import aiofiles
 from datetime import datetime
-from typing import Optional, List, Dict
+from typing import Optional, List
+from app.config import settings
 from models.schemas import Note, NoteCreate, NoteUpdate
 import uuid
 
-NOTES_DIR = "./data/notes"
+NOTES_DIR = settings.notes_dir
 os.makedirs(NOTES_DIR, exist_ok=True)
 
 
