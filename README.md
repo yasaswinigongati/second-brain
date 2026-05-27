@@ -19,4 +19,3 @@ Second Brain is an AI-powered personal note-taking app. It lets you create notes
 - AI: Groq, local Sentence Transformer embeddings
 - Vector DB: ChromaDB
 - Storage: Local JSON files
-
