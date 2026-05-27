@@ -15,6 +15,7 @@ os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
 from langchain.schema import AIMessage, BaseMessage, Document, HumanMessage, SystemMessage
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
+from chromadb.config import Settings as ChromaSettings
 
 from app.config import settings
 from models.schemas import ChatMessage, Note
@@ -59,6 +60,7 @@ def _get_vectorstore() -> Chroma:
             collection_name="second_brain_notes",
             embedding_function=_get_embeddings(),
             persist_directory=settings.chroma_db_path,
+            client_settings=ChromaSettings(anonymized_telemetry=False),
         )
     return _vectorstore
 
