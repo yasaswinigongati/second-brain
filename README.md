@@ -1,16 +1,21 @@
 🧠 Second-brain
 
-# What it is:
-A local-first AI-powered personal note-taking app that lets users write, organize, and chat with their own notes using RAG (Retrieval-Augmented Generation).
+Second Brain is an AI-powered personal note-taking app. It lets you create notes, organize them with tags/notebooks, search by meaning, and chat with your own notes using RAG.
 
-# Frontend:
-Built with Next.js 14, TypeScript, Tailwind CSS, Zustand, and React Query for a fast, responsive UI.
+# Features
 
-# Backend:
-Powered by FastAPI, LangChain, and ChromaDB for APIs, AI workflows, and vector-based semantic search.
+- Create, edit, and delete notes
+- Markdown note editor
+- Notebooks and tags
+- AI auto-tagging
+- Semantic search using ChromaDB
+- Chat with your notes using Groq
+- Dashboard with notes, tags, and notebook stats
 
-# AI Layer:
-Uses OpenAI GPT-4o Mini and text-embedding-3-small for semantic search, contextual chat, and automatic tagging.
+# Tech Stack
 
-# Core Features:
-Markdown notes, notebook organization, semantic search, and AI chat grounded strictly in user data.
+- Frontend: Next.js, TypeScript, Tailwind CSS, React Query, Zustand
+- Backend: FastAPI, Python, LangChain
+- AI: Groq, local Sentence Transformer embeddings
+- Vector DB: ChromaDB
+- Storage: Local JSON files
