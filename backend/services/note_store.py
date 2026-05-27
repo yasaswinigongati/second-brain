@@ -5,7 +5,7 @@ In production, swap for PostgreSQL or SQLite.
 import json
 import os
 import aiofiles
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
 from app.config import settings
 from models.schemas import Note, NoteCreate, NoteUpdate
@@ -27,8 +27,8 @@ async def create_note(data: NoteCreate) -> Note:
         notebook=data.notebook or "Default",
         tags=data.tags,
         word_count=len(data.content.split()),
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
     async with aiofiles.open(_note_path(note.id), "w") as f:
         await f.write(note.model_dump_json(indent=2))
@@ -53,7 +53,7 @@ async def update_note(note_id: str, data: NoteUpdate) -> Optional[Note]:
         setattr(note, field, value)
     if data.content:
         note.word_count = len(data.content.split())
-    note.updated_at = datetime.utcnow()
+    note.updated_at = datetime.now(timezone.utc)
     async with aiofiles.open(_note_path(note_id), "w") as f:
         await f.write(note.model_dump_json(indent=2))
     return note

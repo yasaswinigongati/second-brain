@@ -7,7 +7,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
+  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(dateStr);
+  const date = new Date(hasTimezone ? dateStr : `${dateStr}Z`);
   const diff = Date.now() - date.getTime();
   if (diff < 60_000) return "just now";
   if (diff < 3_600_000) return formatDistanceToNow(date, { addSuffix: true });
