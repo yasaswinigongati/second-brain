@@ -12,7 +12,7 @@ from typing import Any, List, Optional, Tuple
 # Chroma telemetry can produce noisy PostHog errors with some dependency versions.
 os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
 
-from langchain.schema import AIMessage, Document, HumanMessage, SystemMessage
+from langchain.schema import AIMessage, BaseMessage, Document, HumanMessage, SystemMessage
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
@@ -211,7 +211,9 @@ async def chat_with_notes(
             for doc in docs
         )
 
-        messages = [SystemMessage(content=SYSTEM_PROMPT.format(context=context))]
+        messages: list[BaseMessage] = [
+            SystemMessage(content=SYSTEM_PROMPT.format(context=context))
+        ]
         for msg in history[-6:]:
             if msg.role == "user":
                 messages.append(HumanMessage(content=msg.content))

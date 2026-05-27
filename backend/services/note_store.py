@@ -93,7 +93,7 @@ async def list_notes(
 
 async def get_all_notebooks() -> List[str]:
     notes = await list_notes(limit=10000)
-    return list({n.notebook for n in notes})
+    return sorted({n.notebook or "Default" for n in notes})
 
 
 async def get_all_tags() -> List[str]:

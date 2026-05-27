@@ -1,8 +1,11 @@
 """
-Seed script — creates sample notes for testing.
+Seed script - creates sample notes for testing.
 Run: python utils/seed.py  (from backend/)
 """
-import asyncio, sys, os
+import asyncio
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from models.schemas import NoteCreate
@@ -12,33 +15,97 @@ from services.rag_service import index_note
 SAMPLES = [
     NoteCreate(
         title="Getting started with LangChain",
-        content="""# LangChain Overview\n\nLangChain is a framework for building LLM-powered apps.\n\n## Key Concepts\n- **Chains**: sequences of calls\n- **Agents**: LLMs that use tools\n- **Memory**: persisting state between calls\n- **Retrievers**: fetch relevant documents\n\n## RAG Pattern\n1. Embed documents → store in vector DB\n2. Embed query → find similar docs\n3. Pass docs + query to LLM → answer""",
-        notebook="Learning", tags=["langchain", "llm", "rag", "ai"]
+        content="""# LangChain Overview
+
+LangChain is a framework for building LLM-powered apps.
+
+## Key Concepts
+- **Chains**: sequences of calls
+- **Agents**: LLMs that use tools
+- **Memory**: persisting state between calls
+- **Retrievers**: fetch relevant documents
+
+## RAG Pattern
+1. Embed documents -> store in vector DB
+2. Embed query -> find similar docs
+3. Pass docs + query to LLM -> answer""",
+        notebook="Learning",
+        tags=["langchain", "llm", "rag", "ai"],
     ),
     NoteCreate(
         title="Project ideas for Q3",
-        content="""# Q3 Project Ideas\n\n## High Priority\n- Second Brain app with RAG\n- Customer support chatbot\n- Code review assistant\n\n## Research\n- Fine-tuning small models\n- Multimodal pipelines\n\n## Notes\nFocus on projects with clear user value. Ship fast, iterate.""",
-        notebook="Ideas", tags=["projects", "planning", "q3"]
+        content="""# Q3 Project Ideas
+
+## High Priority
+- Second Brain app with RAG
+- Customer support chatbot
+- Code review assistant
+
+## Research
+- Fine-tuning small models
+- Multimodal pipelines
+
+## Notes
+Focus on projects with clear user value. Ship fast, iterate.""",
+        notebook="Ideas",
+        tags=["projects", "planning", "q3"],
     ),
     NoteCreate(
-        title="Meeting notes — AI strategy",
-        content="""# AI Strategy Meeting\n**Date:** 2024-06-01\n\n## Attendees\nAlice, Bob, Carol\n\n## Key Decisions\n- Adopt LangChain for all AI features\n- Use ChromaDB for vector storage\n- Deploy on AWS with auto-scaling\n\n## Action Items\n- [ ] Bob: set up ChromaDB instance\n- [ ] Alice: write prompt templates\n- [ ] Carol: define evaluation metrics""",
-        notebook="Work", tags=["meeting", "ai", "strategy"]
+        title="Meeting notes - AI strategy",
+        content="""# AI Strategy Meeting
+**Date:** 2024-06-01
+
+## Attendees
+Alice, Bob, Carol
+
+## Key Decisions
+- Adopt LangChain for all AI features
+- Use ChromaDB for vector storage
+- Deploy on AWS with auto-scaling
+
+## Action Items
+- [ ] Bob: set up ChromaDB instance
+- [ ] Alice: write prompt templates
+- [ ] Carol: define evaluation metrics""",
+        notebook="Work",
+        tags=["meeting", "ai", "strategy"],
     ),
     NoteCreate(
         title="Python async patterns",
-        content="""# Async Python\n\n## asyncio basics\n```python\nasync def main():\n    result = await some_coroutine()\n    return result\n\nasyncio.run(main())\n```\n\n## Concurrent tasks\n```python\nresults = await asyncio.gather(\n    task1(), task2(), task3()\n)\n```\n\n## FastAPI + async\nFastAPI natively supports async route handlers — always use `async def` for I/O bound operations.""",
-        notebook="Learning", tags=["python", "async", "fastapi"]
+        content="""# Async Python
+
+## asyncio basics
+```python
+async def main():
+    result = await some_coroutine()
+    return result
+
+asyncio.run(main())
+```
+
+## Concurrent tasks
+```python
+results = await asyncio.gather(
+    task1(), task2(), task3()
+)
+```
+
+## FastAPI + async
+FastAPI natively supports async route handlers - always use `async def` for I/O bound operations.""",
+        notebook="Learning",
+        tags=["python", "async", "fastapi"],
     ),
 ]
+
 
 async def seed():
     print("Seeding sample notes...")
     for sample in SAMPLES:
         note = await create_note(sample)
         await index_note(note)
-        print(f"  ✓ Created: {note.title}")
+        print(f"  Created: {note.title}")
     print(f"\nDone! {len(SAMPLES)} notes created.")
+
 
 if __name__ == "__main__":
     asyncio.run(seed())
