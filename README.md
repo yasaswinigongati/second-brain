@@ -1,8 +1,8 @@
-# Second Brain
+## Second Brain
 
 Second Brain is an AI-powered personal note-taking app. It lets you create notes, organize them with tags/notebooks, search by meaning, and chat with your own notes using RAG.
 
-## Features
+# Features
 
 - Create, edit, and delete notes
 - Markdown note editor
@@ -12,7 +12,7 @@ Second Brain is an AI-powered personal note-taking app. It lets you create notes
 - Chat with your notes using Groq
 - Dashboard with notes, tags, and notebook stats
 
-## Tech Stack
+# Tech Stack
 
 - Frontend: Next.js, TypeScript, Tailwind CSS, React Query, Zustand
 - Backend: FastAPI, Python, LangChain
@@ -20,28 +20,3 @@ Second Brain is an AI-powered personal note-taking app. It lets you create notes
 - Vector DB: ChromaDB
 - Storage: Local JSON files
 
-## Run Locally
-
-Backend:
-
-```bash
-cd backend
-pip install -r requirements.txt
-cp .env.example .env
-uvicorn app.main:app --reload --port 8000
-```
-
-Add your Groq API key in `backend/.env`.
-
-Frontend:
-
-```bash
-cd frontend
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-Open `http://localhost:3000`.
-
-API docs are available at `http://localhost:8000/docs`.
