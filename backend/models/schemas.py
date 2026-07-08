@@ -17,7 +17,7 @@ class NoteCreate(NoteBase):
 
 class NoteUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=500)
-    content: Optional[str] = None
+    content: Optional[str] = Field(None, min_length=1)
     notebook: Optional[str] = None
     tags: Optional[List[str]] = None
 
